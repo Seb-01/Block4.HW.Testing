@@ -31,7 +31,7 @@ def test_api_get_courses(api_client, course_factory):
     assert resp.status_code == HTTP_200_OK
     resp_json = resp.json()
     #если данные есть
-    if resp_json != []:
+    if resp_json:  #так небезопасно if resp_json != []:
         num_json = len(resp_json)
         assert num_json == 3
 
@@ -107,9 +107,10 @@ def test_api_get_course_filter_name(api_client, course_factory):
     assert resp.status_code == HTTP_200_OK
     resp_json = resp.json()
     #если данные есть
-    if resp_json != []:
-        st_t = resp_json[0]["name"]
-        assert st_t == "C# for advanced levels prof"
+    if resp_json:
+        #проверяем список:
+        for check_name in resp_json:
+            assert check_name["name"]=="C# for advanced levels prof"
 
 
 @pytest.mark.django_db
@@ -128,6 +129,8 @@ def test_api_create_course(api_client):
     #assert
     assert resp.status_code == HTTP_201_CREATED
     assert resp.status_text == 'Created'
+    #проверяем, что создалось именно то, что ожидаем:
+    assert resp.data["name"] == "C# for advanced levels prof"
 
 @pytest.mark.django_db
 def test_api_update_course(api_client, course_factory):
